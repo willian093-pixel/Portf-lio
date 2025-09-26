@@ -130,7 +130,7 @@ input:focus {
     let dadosFIIs = [];
 
     async function carregarFIIs() {
-      const resp = await fetch("http://localhost:3000/api/fiis?tickers=CPLG11,BTML11,KNCR11,MXRF11,XPML11,KNIP11,HGLG11,GARE11,VISC11,KNRI11");
+      const resposta = await fetch("https://fundos-imobiliarios.vercel.app/api/fii/T");
       dadosFIIs = await resp.json();
       renderTabela(dadosFIIs);
     }
