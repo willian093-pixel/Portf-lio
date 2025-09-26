@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Saúde</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #43cea2, #185a9d);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    color: #fff;
+  }
+
+  .container {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 450px;
+    width: 100%;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 1.8rem; /* menor que antes */
+    margin-bottom: 20px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  label {
+    display: block;
+    font-weight: bold;
+    margin: 10px 0 5px;
+    font-size: 0.9rem; /* tamanho menor */
+  }
+
+  input, select {
+    width: 100%;
+    padding: 10px; /* menor padding */
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    background: rgba(255,255,255,0.85);
+    color: #333;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+  }
+
+  input:focus, select:focus {
+    border: 2px solid #43cea2;
+    box-shadow: 0 0 6px rgba(67,206,162,0.6);
+  }
+
+  button {
+    width: 100%;
+    padding: 12px; /* menor padding */
+    background: linear-gradient(135deg, #43cea2, #185a9d);
+    color: white;
+    font-size: 1rem; /* menor fonte */
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+  }
+
+  button:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .resultado {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 10px;
+    font-size: 1rem;
+    color: #222;
+    transition: all 0.3s ease;
+  }
+
+  .imc-abaixo { color: #3498db; font-weight: bold; }
+  .imc-normal { color: #2ecc71; font-weight: bold; }
+  .imc-sobrepeso { color: #e67e22; font-weight: bold; }
+  .imc-obesidade { color: #e74c3c; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Calculadora de Saúde</h1>
+  <form id="form">
+    <label for="idade">Idade:</label>
+    <input type="number" id="idade" required>
+
+    <label for="sexo">Sexo:</label>
+    <select id="sexo" required>
+      <option value="">Selecione</option>
+      <option value="masculino">Masculino</option>
+      <option value="feminino">Feminino</option>
+    </select>
+
+    <label for="peso">Peso (kg):</label>
+    <input type="number" id="peso" step="0.1" required>
+
+    <label for="altura">Altura (cm):</label>
+    <input type="number" id="altura" required>
+
+    <label for="horas">Horas de atividade física por semana:</label>
+    <input type="number" id="horas" step="0.1" required>
+
+    <button type="submit">Calcular</button>
+  </form>
+
+  <div class="resultado" id="resultado"></div>
+</div>
+
+<script>
+function classificarIMC(imc) {
+  if (imc < 18.5) return { texto: "Abaixo do peso", classe: "imc-abaixo" };
+  else if (imc < 24.9) return { texto: "Peso normal", classe: "imc-normal" };
+  else if (imc < 29.9) return { texto: "Sobrepeso", classe: "imc-sobrepeso" };
+  else return { texto: "Obesidade", classe: "imc-obesidade" };
+}
+
+document.getElementById("form").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const idade = parseInt(document.getElementById("idade").value);
+  const sexo = document.getElementById("sexo").value;
+  const peso = parseFloat(document.getElementById("peso").value);
+  const altura = parseInt(document.getElementById("altura").value);
+  const horas = parseFloat(document.getElementById("horas").value);
+
+  const alturaM = altura / 100;
+  const imcNum = peso / (alturaM * alturaM);
+  const imc = imcNum.toFixed(2);
+  const classificacao = classificarIMC(imcNum);
+
+  let tmb;
+  if(sexo === "masculino") tmb = 10 * peso + 6.25 * altura - 5 * idade + 5;
+  else tmb = 10 * peso + 6.25 * altura - 5 * idade - 161;
+
+  let fator = 1.2;
+  if (horas >=1 && horas <=3) fator = 1.375;
+  else if(horas>3 && horas<=6) fator = 1.55;
+  else if(horas>6 && horas<=10) fator = 1.725;
+  else if(horas>10) fator = 1.9;
+
+  const tmbFinal = (tmb*fator).toFixed(2);
+
+  document.getElementById("resultado").innerHTML = `
+    <p><strong>IMC:</strong> ${imc} 
+      <span class="${classificacao.classe}">(${classificacao.texto})</span></p>
+    <p><strong>TMB:</strong> ${tmb.toFixed(2)} kcal/dia</p>
+    <p><strong>TMB Ajustado (atividade):</strong> ${tmbFinal} kcal/dia</p>
+  `;
+});
+</script>
+</body>
+</html>
