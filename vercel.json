@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "name": "fundos-imobiliarios",
+  "builds": [
+    {
+      "src": "Fundos-Imobiliarios/index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "Fundos-Imobiliarios/api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/fii/(.*)",
+      "dest": "Fundos-Imobiliarios/api/[ticker].js"
+    },
+    {
+      "src": "/api/fii/T",
+      "dest": "Fundos-Imobiliarios/api/T.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "Fundos-Imobiliarios/index.html"
+    }
+  ]
+}
